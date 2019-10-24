@@ -1,6 +1,6 @@
 ## LegendKeeper
 
-Application used to keep track of a series of game sessions for Table Top Role Playing Games TTRPG.
+Application used to display, edit, save, and upload a D3 hex map along with session for any wanted Table Top Role Playing Games (TTRPG).
 
 ## Tech Stack
 
@@ -33,3 +33,7 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Author
+
+Nathanial W. Heard

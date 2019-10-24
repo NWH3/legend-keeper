@@ -1,0 +1,176 @@
+.world-container {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  position: fixed;
+  background-color: black;
+  color: white;
+  margin: 0em;
+  // background-image: url("../../assets/greek_flowers.jpg");
+  // background-repeat: no-repeat;
+  // background-size: cover;
+  // background-image: linear-gradient(#817d05, #464401);
+}
+
+.world-container button {
+  color: white;
+}
+
+.session-desc {
+  width: 100%;
+  height: 100%;
+  display: block;
+  text-align: left;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-indent: 2em;
+}
+
+.session-side-nav {
+  width: 70%;
+  height: 100%;
+}
+
+.world-map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.world-map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: black;
+}
+
+.world-map-color-picker-container {
+  width: auto;
+  padding: 0.5em;
+  border-bottom-style: solid;
+  border-bottom-color: #2183c8;
+}
+
+.color-picker {
+  margin: 0.5em;
+  width: 10%;
+}
+
+.color-label {
+  display: inline-flex;
+  margin: 0.5em;
+  width: 10%;
+}
+
+.color-brush {
+  display: inline-flex;
+  margin: 0.5em;
+  width: 10%;
+}
+
+.text-size {
+  display: inline-flex;
+  margin: 0.5em;
+  width: 10%;
+}
+
+.edit-text-label {
+  display: inline-flex;
+  margin: 0.5em;
+  width: 10%;
+}
+
+.edit-text-button {
+  margin: 0.5em;
+  width: 10%;
+}
+
+.edit-text {
+  margin: 0.5em;
+  width: 10%;
+}
+
+.edit-button:hover {
+  background: #1399f7;
+}
+
+.edit-button {
+  margin: 0.5em;
+  width: 20%;
+  background: #2183c8;
+}
+
+.edit-button-container {
+  width: 100%;
+  text-align: center;
+  border-bottom-style: solid;
+  border-bottom-color: #2183c8;
+}
+
+.load-map-button {
+  margin: 0.5em;
+  width: 20%;
+  display: inline-flex;
+}
+
+.save-map-button:hover {
+  background: #1399f7;
+}
+
+.map-width {
+  width: 10%;
+}
+
+.map-height {
+  width: 10%;
+}
+
+.map-width-label {
+  margin: 0.5em;
+}
+
+.map-height-label {
+  margin: 0.5em;
+}
+
+.refresh-map-button:hover {
+  background: #1399f7;
+}
+
+.save-map-button {
+  margin: 0.5em;
+  display: inline-flex;
+  background: #2183c8;
+}
+
+.refresh-map-button {
+  margin: 0.5em;
+  background: #2183c8;
+}
+
+.drawer-container {
+  width: 100%;
+  height: 100%;
+}
+
+.block {
+  display: block;
+}
+
+mat-expansion-panel {
+  margin: 1em;
+}
+
+@media screen and (max-width:780px) {
+
+  .session-name {
+    font-size: 16px;
+  }
+
+
+  .edit-button {
+    width: 40%;
+    font-size: 14px;
+  }
+
+}

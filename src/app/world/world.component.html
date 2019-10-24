@@ -1,0 +1,55 @@
+<div class="world-container">
+  <div id="world-map-container" class="world-map-container">
+    <div class="edit-button-container">
+      <button id="edit-button" class="edit-button" name="edit-button" (click)="endableEditMode()" mat-raised-button>{{editMode && 'Disable Edit Mode' || 'Enable Edit Mode'}}</button>
+      <button class="edit-button" (click)="drawer.toggle()" mat-raised-button>View Logs</button>
+    </div>
+    <div id="world-map-color-picker-container" class="world-map-color-picker-container" style="display: none;">
+      <div class="block">
+        <label id="edit-text-label" class="edit-text-label" >Enter Text: </label>
+        <input type="text" id="edit-text" class="edit-text" (change)="updateText(this)" matInput />
+        <label id="color-width-label" class="color-label" >Text Size: </label>
+        <input id="text-size" class="text-size" type="number" [(ngModel)]="textSize" matInput />
+        <label id="color-picker-label" class="color-label" >Select Color: </label>
+        <input id="color-picker" class="color-picker" [(colorPicker)]="textColor" [style.background]="textColor" ng-reflect-color-picker="#816969" style="background: rgb(129, 105, 105);">
+      </div>
+      <div class="block">
+        <label id="color-width-label" class="color-label" >Brush Width: </label>
+        <input id="color-brush-width" class="color-brush" type="number" [(ngModel)]="brushWidth" />
+        <label id="color-picker-label" class="color-label" >Select Color: </label>
+        <input id="color-picker" class="color-picker" [(colorPicker)]="color" [style.background]="color" ng-reflect-color-picker="#816969" style="background: rgb(129, 105, 105);">
+      </div>
+      <div class="block">
+        <label id="map-width-label" class="map-width-label" >Width: </label>
+        <input type="number" id="map-width" class="map-width" [(ngModel)]="mapWidth" matInput />
+        <label id="map-height-label" class="map-width-label" >Height: </label>
+        <input type="number" id="map-height" class="map-width" [(ngModel)]="mapHeight" matInput />
+        <button class="refresh-map" id="refresh-map" class="refresh-map-button" (click)="generateNewMap(this)" mat-raised-button>Refresh Map</button>
+        <label class="map-width-label" >Load Map: </label>
+        <input type="file" id="load-map" class="load-map-button" (change)="uploadMap(this)" matInput />
+        <button class="save-map" id="save-map" class="save-map-button" (click)="saveMap(this)" mat-raised-button>Save Map</button>
+      </div>
+    </div>
+    <mat-drawer-container class="drawer-container">
+      <mat-drawer #drawer class="session-side-nav" >
+            <mat-accordion *ngFor="let s of world.sessions">
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{s.name}}
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{s.date}}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p class="session-desc">{{s.desc}}</p>
+              </mat-expansion-panel>
+            </mat-accordion>
+      </mat-drawer>
+      <mat-drawer-content>
+        <svg id="world-map" class="world-map">
+        </svg>
+      </mat-drawer-content>
+    </mat-drawer-container>
+  </div>
+</div>

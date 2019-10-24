@@ -1,0 +1,21 @@
+{
+  "name": "Symbaroum",
+  "era": "year 21 of Korinthia",
+  "sessions": [
+    {
+      "desc": "\tAnd so Alberetor fell, forcing Queen Korintha and her people north over the Titans mountains to Davokar's edge. Here Ambria was built, next to the Barbarian settlements that were scattered throughout the Davokar forest. Rejected by all who claim Davokar their home, the Ambrians are seen as intruders to the land by both the Elder Folks and the local Barbarians. With the threat of the Dark Lords and their hordes of corrupted undead, diplomacy and peace between the living races is the needed path for all civilizations inhabiting the land to survive. Unable to return home or rid the land of the corruption, Queen Korintha gathers her strength and seeks new options to help her people and power grow. Symbaroum, an ancient civilization which once spanned all the realm, now lays in ruin as nature and the corruption slowly take hold. Desperate for any of the secrets kept deep within the Davokar forests that might help return the Dark Lords to their slumber, Queen Korintha sends expedition after expedition into Davokar in hopes of finding their salvation. It is south of the Titans mountains that we start our journey, in the once beautiful lands of Alberetor. Two decades after Queen Korintha had been freed from the Dark Lords grasp. Year 21.",
+      "name": "Session #1 - The Promised Land",
+      "date": "09/13/2019 - 5:00pm"
+    },
+    {
+      "desc": "\tYndaros, the city of the queen, stands tall over the golden plains of Prios. Large stone towers reach for the heavens while people toil and wonder through the streets. Known not only for its art, but also for the many wonderous markets, Yndaros offers much to the wealthy and privileged. Around you stands a sea of refugees, near 20,000 people who fled the corrupted lands of Alberetor. To the north lay the slums of the city while to the west the great gladiatorial Dome stands ready for any brave enough to fight. The sun sits at its highest point while priests, city guards, and Black Claoks comb through the refugee camp in search of any blight marked individuals. It is here that you continue your journey. Here your fate is decided.",
+      "name": "Session #2 - The Mark of the Beast",
+      "date": "09/20/2019 - 4:00pm"
+    },
+    {
+      "name": "Session #3 - The Lost Ruins of Hargrin",
+      "desc": "News of the Flayers capture has spread quickly through Thistle Hold, providing a great deal of order and peace to the people. Still Ambria is plagued by the Blight Born and even with the Flayer's death there only seem to be more reports of attacks along the north edge of Ambria. The church of Prios preach of cleansing the land while templars hunt for any marked by the corruption. Even with Ordo Magica, originally a research institute, has been training and enlisting Beast Slayers to help protect the land. As the group gathers in the Ordo Magica Tower in Thistle Hold, a flustered and rather annoyed looking group of Black Cloaks enter the tower. The goblin doorkeeper has been pushed aside and restrained by the Black Cloaks. It is here you continue your journey.",
+      "date": "10/04/2019 - 4:00pm"
+    }
+  ]
+}

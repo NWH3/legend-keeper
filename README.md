@@ -1,6 +1,6 @@
 ## LegendKeeper
 
-Application used to display, edit, save, and upload a D3 hex map along with session for any wanted Table Top Role Playing Games (TTRPG).
+Application used to display, edit, save, and upload a D3 hex map along with game session tracking/notes for any wanted Table Top Role Playing Games (TTRPG).
 
 ## Tech Stack
 

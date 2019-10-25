@@ -35,6 +35,8 @@ export class WorldComponent implements OnInit {
 
   private textSize;
 
+  private hexRadius;
+
   private specialChrRegex = /['"^&*#$@!\s]/g;
 
   constructor() { }
@@ -42,6 +44,7 @@ export class WorldComponent implements OnInit {
   ngOnInit() {
     this.world = Symbaroum_World_Data;
     this.textSize = 20;
+    this.hexRadius = 14;
     this.textColor = '#000';
     this.brushWidth = 1;
     this.mapWidth = 100;
@@ -104,7 +107,6 @@ export class WorldComponent implements OnInit {
 
   loadHexagonMap() {
     var hexbin = d3hexbin.hexbin();
-    var hexRadius = 14;
     var self = this;
     this.svg = d3.select("svg")
       .attr('pointer-events', 'all')
@@ -114,7 +116,7 @@ export class WorldComponent implements OnInit {
         }
       }))
       .append("g");
-    hexbin = hexbin.radius(hexRadius);
+    hexbin = hexbin.radius(this.hexRadius);
     var paths = d3.select("g").selectAll("path");
 
     this.svg.append("g")
@@ -230,15 +232,14 @@ export class WorldComponent implements OnInit {
 
   generateNewMap(element) {
     var hexbin = d3hexbin.hexbin();
-    var hexRadius = 14;
     var points = [];
     // Map size of 100 X 100 by default, symbaroum map is 299 X 450
     for (var i = 0; i < this.mapHeight; i++) {
         for (var j = 0; j < this.mapWidth; j++) {
-            points.push([hexRadius * j * 1, hexRadius * i * 1]);
+            points.push([this.hexRadius * j * 1, this.hexRadius * i * 1]);
         }
     }
-    hexbin = hexbin.radius(hexRadius);
+    hexbin = hexbin.radius(this.hexRadius);
     this.bins = hexbin(points);
     // for (var i = 0; i < this.bins.length; i++) {
     //   this.bins[i].color = Symbaroum_Map[i].color;

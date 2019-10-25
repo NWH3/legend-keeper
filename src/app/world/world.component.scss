@@ -27,8 +27,13 @@
 }
 
 .session-side-nav {
-  width: 70%;
+  width: 85%;
   height: 100%;
+  padding-bottom: 8em;
+}
+
+mat-accordion>.mat-expansion-panel-spacing {
+    margin-bottom: 1em;
 }
 
 .world-map-container {

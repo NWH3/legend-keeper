@@ -104,7 +104,7 @@ export class WorldComponent implements OnInit {
 
   loadHexagonMap() {
     var hexbin = d3hexbin.hexbin();
-    var hexRadius = 24;
+    var hexRadius = 14;
     var self = this;
     this.svg = d3.select("svg")
       .attr('pointer-events', 'all')
@@ -230,7 +230,7 @@ export class WorldComponent implements OnInit {
 
   generateNewMap(element) {
     var hexbin = d3hexbin.hexbin();
-    var hexRadius = 24;
+    var hexRadius = 14;
     var points = [];
     // Map size of 100 X 100 by default, symbaroum map is 299 X 450
     for (var i = 0; i < this.mapHeight; i++) {
@@ -240,6 +240,12 @@ export class WorldComponent implements OnInit {
     }
     hexbin = hexbin.radius(hexRadius);
     this.bins = hexbin(points);
+    // for (var i = 0; i < this.bins.length; i++) {
+    //   this.bins[i].color = Symbaroum_Map[i].color;
+    //   this.bins[i].text = Symbaroum_Map[i].text;
+    //   this.bins[i].textSize = Symbaroum_Map[i].textSize;
+    //   this.bins[i].textColor = Symbaroum_Map[i].textColor;
+    // }
     this.svg.selectAll("g").remove();
     this.loadHexagonMap();
   }

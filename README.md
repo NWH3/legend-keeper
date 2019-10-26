@@ -1,18 +1,24 @@
 ## LegendKeeper
 
-Application used to display, edit, save, and upload a D3 hex map along with game session tracking/notes for any wanted Table Top Role Playing Games (TTRPG).
+Application used to display, edit, save, and upload a D3 hex map along with game session tracking/notes for any wanted Table Top Role Playing Games (TTRPGs).
 
 ## Tech Stack
 
-Angular 8
-ngx color picker
-D3
+- Angular 8
+- ngx-color-picker
+- D3
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.12.
 
-## Development server
+## Development Deployment
 
-Run `ng serve --host 0.0.0.0` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+First install all dependencies with `npm install`
+Then run `ng serve --host 0.0.0.0` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Docker Deployment
+
+Run `docker build -t legend-keeper .` to build the docker image
+Then run `docker run -p 80:80 --name=lk -d legend-keeper` to start the docker container with the running UI
 
 ## Code scaffolding
 

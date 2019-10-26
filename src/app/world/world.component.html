@@ -1,11 +1,12 @@
 <div class="world-container">
   <div id="world-map-container" class="world-map-container">
     <div class="edit-button-container">
-      <button id="edit-button" class="edit-button" name="edit-button" (click)="endableEditMode()" mat-raised-button>{{editMode && 'Disable Edit Mode' || 'Enable Edit Mode'}}</button>
+      <button id="edit-button" class="edit-button" name="edit-button" (click)="enableEditMode()" mat-raised-button>{{editMode && 'Disable Edit Mode' || 'Enable Edit Mode'}}</button>
       <button class="edit-button" (click)="drawer.toggle()" mat-raised-button>Sessions</button>
     </div>
     <div id="world-map-color-picker-container" class="world-map-color-picker-container" style="display: none;">
       <div class="block">
+        <button id="edit-text-button" class="edit-button" (click)="enableEditTextMode()" mat-raised-button>{{editTextMode && 'Disable Text Edit Mode' || 'Enable Text Edit Mode'}}</button>
         <label id="edit-text-label" class="edit-text-label" >Enter Text: </label>
         <input type="text" id="edit-text" class="edit-text" (change)="updateText(this)" matInput />
         <label id="color-width-label" class="color-label" >Text Size: </label>
@@ -14,6 +15,7 @@
         <input id="color-picker" class="color-picker" [(colorPicker)]="textColor" [style.background]="textColor" ng-reflect-color-picker="#816969" style="background: rgb(129, 105, 105);">
       </div>
       <div class="block">
+        <button id="edit-color-button" class="edit-button" (click)="enableEditColorMode()" mat-raised-button>{{editColorMode && 'Disable Color Edit Mode' || 'Enable Color Edit Mode'}}</button>
         <label id="color-width-label" class="color-label" >Brush Width: </label>
         <input id="color-brush-width" class="color-brush" type="number" [(ngModel)]="brushWidth" />
         <label id="color-picker-label" class="color-label" >Select Color: </label>

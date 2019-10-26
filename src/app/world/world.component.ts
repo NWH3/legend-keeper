@@ -19,6 +19,10 @@ export class WorldComponent implements OnInit {
 
   private editMode;
 
+  private editTextMode;
+
+  private editColorMode;
+
   private bins;
 
   private svg;
@@ -51,58 +55,11 @@ export class WorldComponent implements OnInit {
     this.mapHeight = 100;
     this.editText = '';
     this.editMode = false;
+    this.editTextMode = false;
+    this.editColorMode = false;
     this.isEditing = false;
     this.bins = Symbaroum_Map;
     this.loadHexagonMap();
-  }
-
-  uploadMap(fileName) {
-    var file = (<HTMLInputElement>document.getElementById('load-map')).files[0];
-    if (!file) {
-      console.log('No file found...')
-      return;
-    }
-    var self = this;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var contents = reader.result;
-      self.bins = JSON.parse((<string>contents));
-      self.svg.selectAll("g").remove();
-      self.loadHexagonMap();
-    };
-    reader.readAsText(file);
-  }
-
-  saveMap(element) {
-    // Copy over the bins to a new array for saving
-    var binCopies = new Array<any>();
-    for (let i = 0; i < this.bins.length; i++) {;
-      binCopies[i] = {};
-      binCopies[i].x = this.bins[i].x;
-      binCopies[i].y = this.bins[i].y;
-      binCopies[i][0] = this.bins[i][0];
-      binCopies[i].color = this.bins[i].color;
-      binCopies[i].text = this.bins[i].text;
-      binCopies[i].textSize = this.bins[i].textSize;
-      binCopies[i].textColor = this.bins[i].textColor;
-    }
-
-    const url= URL.createObjectURL(new Blob([JSON.stringify(binCopies)]));
-    var dom = document.createElement('a');
-    dom.setAttribute("href", url);
-    dom.setAttribute("download", "WorldMap.json");
-
-    if (document.createEvent) {
-      var event = document.createEvent('MouseEvents');
-      event.initEvent('click', true, true);
-      dom.dispatchEvent(event);
-    } else {
-      dom.click();
-    }
-  }
-
-  updateText(element) {
-    this.editText = (<HTMLInputElement>document.getElementById('edit-text')).value;
   }
 
   loadHexagonMap() {
@@ -115,7 +72,9 @@ export class WorldComponent implements OnInit {
           self.svg.attr("transform", d3.event.transform);
         }
       }))
-      .append("g");
+      .append("g")
+      .attr("transform","translate(0,0)");
+
     hexbin = hexbin.radius(this.hexRadius);
     var paths = d3.select("g").selectAll("path");
 
@@ -154,25 +113,9 @@ export class WorldComponent implements OnInit {
         d3.select(this).transition()
                .duration('50')
                .attr('opacity', '.85');
-        if (self.isEditing) {
-         if (self.color && self.color.trim() != '' ) {
-           d3.select(this).style("fill", self.color);
-           d.color = self.color;
-           for (var j = 1; j < self.brushWidth; j++) {
-             if (this.parentElement.childNodes.length > (i + j)) {
-              var pathRight = this.parentElement.childNodes[i + j];
-              pathRight.color = self.color;
-              d3.select(pathRight).style("fill", self.color);
-              self.bins[i + j].color = self.color;
-             }
-             if (this.parentElement.childNodes.length > (i - j)) {
-              var pathLeft = this.parentElement.childNodes[i - j];
-              pathLeft.color = self.color;
-              d3.select(pathLeft).style("fill", self.color);
-              self.bins[i - j].color = self.color;
-             }
-           }
-         }
+
+        if (self.editColorMode) {
+          self.updateHexagonColor(this, d, i, self);
         }
       })
       .on('mouseout', function (d) {
@@ -181,53 +124,66 @@ export class WorldComponent implements OnInit {
              .attr('opacity', '1');
       })
       .on('click', function(d, i) {
-        if (self.editMode) {
+        if (self.editColorMode) {
           self.isEditing = !self.isEditing;
-          if (self.color && self.color.trim() != '' ) {
-           d3.select(this).style("fill", self.color);
-           d.color = self.color;
-           for (var j = 1; j < self.brushWidth; j++) {
-             if (this.parentElement.childNodes.length > (i + j)) {
-              var pathRight = this.parentElement.childNodes[i + j];
-              pathRight.color = self.color;
-              d3.select(pathRight).style("fill", self.color);
-              self.bins[i + j].color = self.color;
-             }
-             if (this.parentElement.childNodes.length > (i - j)) {
-              var pathLeft = this.parentElement.childNodes[i - j];
-              pathLeft.color = self.color;
-              d3.select(pathLeft).style("fill", self.color);
-              self.bins[i - j].color = self.color;
-             }
-           }
-          }
+          self.updateHexagonColor(this, d, i, self);
+        }
 
-          if (d.text) {
-            console.log(d.text.replace(self.specialChrRegex, '_').trim() + i);
-            self.svg.select('#' + d.text.replace(self.specialChrRegex, '_').trim() + i)
-              .attr('x', d.x)
-              .attr('y', d.y)
-              .remove('text');
-            d.text = null;
-            d.textSize = null;
-            d.textColor = null;
-          }
-          if (self.editText && self.editText.trim() != '' ) {
-            d.text = self.editText;
-            d.textSize = self.textSize;
-            d.textColor = self.textColor;
-            console.log(d.text.replace(self.specialChrRegex, '_').trim() + i + " and " + d.textSize);
-            self.svg.append('text')
-              .text(d.text)
-              .attr('x', d.x)
-              .attr('y', d.y)
-              .attr('id', d.text.replace(self.specialChrRegex, '_').trim() + i)
-              .attr('font-size', self.textSize)
-              .attr('fill', d.textColor);
-          }
+        if (self.editTextMode) {
+          self.updateHexagonText(d, i, self);
         }
       })
       .append("svg:title");
+  }
+
+  updateHexagonColor(node, d, i, self) {
+    if (self.isEditing
+        && self.editColorMode
+        && self.color
+        && self.color.trim() != '' ) {
+       d3.select(node).style("fill", self.color);
+       d.color = self.color;
+       for (var j = 1; j < self.brushWidth; j++) {
+         if (node.parentElement.childNodes.length > (i + j)) {
+          var pathRight = node.parentElement.childNodes[i + j];
+          pathRight.color = self.color;
+          d3.select(pathRight).style("fill", self.color);
+          self.bins[i + j].color = self.color;
+         }
+         if (node.parentElement.childNodes.length > (i - j)) {
+          var pathLeft = node.parentElement.childNodes[i - j];
+          pathLeft.color = self.color;
+          d3.select(pathLeft).style("fill", self.color);
+          self.bins[i - j].color = self.color;
+         }
+       }
+    }
+  }
+
+  updateHexagonText(d, i, self) {
+    if (d.text) {
+      console.log(d.text.replace(self.specialChrRegex, '_').trim() + i);
+      self.svg.select('#' + d.text.replace(self.specialChrRegex, '_').trim() + i)
+        .attr('x', d.x)
+        .attr('y', d.y)
+        .remove('text');
+      d.text = null;
+      d.textSize = null;
+      d.textColor = null;
+    }
+    if (self.editText && self.editText.trim() != '' ) {
+      d.text = self.editText;
+      d.textSize = self.textSize;
+      d.textColor = self.textColor;
+      console.log(d.text.replace(self.specialChrRegex, '_').trim() + i + " and " + d.textSize);
+      self.svg.append('text')
+        .text(d.text)
+        .attr('x', d.x)
+        .attr('y', d.y)
+        .attr('id', d.text.replace(self.specialChrRegex, '_').trim() + i)
+        .attr('font-size', self.textSize)
+        .attr('fill', d.textColor);
+    }
   }
 
   generateNewMap(element) {
@@ -251,7 +207,56 @@ export class WorldComponent implements OnInit {
     this.loadHexagonMap();
   }
 
-  endableEditMode() {
+  uploadMap(fileName) {
+    var file = (<HTMLInputElement>document.getElementById('load-map')).files[0];
+    if (!file) {
+      console.log('No file found...')
+      return;
+    }
+    var self = this;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var contents = reader.result;
+      self.bins = JSON.parse((<string>contents));
+      self.svg.selectAll("*").remove();
+      self.loadHexagonMap();
+    };
+    reader.readAsText(file);
+  }
+
+  saveMap(element) {
+    // Copy over the bins to a new array for saving
+    var binCopies = new Array<any>();
+    for (let i = 0; i < this.bins.length; i++) {;
+      binCopies[i] = {};
+      binCopies[i].x = this.bins[i].x;
+      binCopies[i].y = this.bins[i].y;
+      binCopies[i][0] = this.bins[i][0];
+      binCopies[i].color = this.bins[i].color;
+      binCopies[i].text = this.bins[i].text;
+      binCopies[i].textSize = this.bins[i].textSize;
+      binCopies[i].textColor = this.bins[i].textColor;
+    }
+
+    const url= URL.createObjectURL(new Blob([JSON.stringify(binCopies)]));
+    var dom = document.createElement('a');
+    dom.setAttribute("href", url);
+    dom.setAttribute("download", "WorldMap.json");
+
+    if (document.createEvent) {
+      var event = document.createEvent('MouseEvents');
+      event.initEvent('click', true, true);
+      dom.dispatchEvent(event);
+    } else {
+      dom.click();
+    }
+  }
+
+  updateText(element) {
+    this.editText = (<HTMLInputElement>document.getElementById('edit-text')).value;
+  }
+
+  enableEditMode() {
     this.editMode = !this.editMode;
     const editOptionsContinaer = document.getElementById("world-map-color-picker-container");
     if (editOptionsContinaer.style.display === "none") {
@@ -259,5 +264,15 @@ export class WorldComponent implements OnInit {
     } else {
       editOptionsContinaer.style.display = "none";
     }
+  }
+
+  enableEditTextMode() {
+    this.editTextMode = !this.editTextMode;
+    this.editColorMode = false;
+  }
+
+  enableEditColorMode() {
+    this.editColorMode = !this.editColorMode;
+    this.editTextMode = false;
   }
 }

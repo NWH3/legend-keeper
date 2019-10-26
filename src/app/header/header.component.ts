@@ -12,9 +12,12 @@ export class HeaderComponent implements OnInit {
 
   private editMode;
 
+  private title;
+
   constructor() { }
 
   ngOnInit() {
+    this.title = 'Legend Keeper Alpha V0.0.1'
     this.editMode = false;
     this.world = Symbaroum_World_Data;
   }

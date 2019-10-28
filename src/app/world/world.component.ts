@@ -19,6 +19,8 @@ export class WorldComponent implements OnInit {
 
   private editMode;
 
+  private showSessions;
+
   private editTextMode;
 
   private editColorMode;
@@ -55,6 +57,7 @@ export class WorldComponent implements OnInit {
     this.mapHeight = 100;
     this.editText = '';
     this.editMode = false;
+    this.showSessions = false;
     this.editTextMode = false;
     this.editColorMode = false;
     this.isEditing = false;
@@ -111,7 +114,7 @@ export class WorldComponent implements OnInit {
       .attr("stroke", "black")
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
-               .duration('50')
+               .duration('10')
                .attr('opacity', '.85');
 
         if (self.editColorMode) {
@@ -120,7 +123,7 @@ export class WorldComponent implements OnInit {
       })
       .on('mouseout', function (d) {
         d3.select(this).transition()
-             .duration('50')
+             .duration('10')
              .attr('opacity', '1');
       })
       .on('click', function(d, i) {
@@ -204,6 +207,7 @@ export class WorldComponent implements OnInit {
     //   this.bins[i].textColor = Symbaroum_Map[i].textColor;
     // }
     this.svg.selectAll("g").remove();
+    this.svg.selectAll("text").remove();
     this.loadHexagonMap();
   }
 
@@ -256,23 +260,32 @@ export class WorldComponent implements OnInit {
     this.editText = (<HTMLInputElement>document.getElementById('edit-text')).value;
   }
 
-  enableEditMode() {
+  toggleEditMode() {
     this.editMode = !this.editMode;
     const editOptionsContinaer = document.getElementById("world-map-color-picker-container");
     if (editOptionsContinaer.style.display === "none") {
       editOptionsContinaer.style.display = "block";
     } else {
       editOptionsContinaer.style.display = "none";
+      if (this.isEditing) {
+         this.isEditing = !this.isEditing;
+      }
     }
   }
 
-  enableEditTextMode() {
+  toggleEditTextMode() {
     this.editTextMode = !this.editTextMode;
     this.editColorMode = false;
+    if (this.isEditing) {
+       this.isEditing = !this.isEditing;
+    }
   }
 
-  enableEditColorMode() {
+  toggleEditColorMode() {
     this.editColorMode = !this.editColorMode;
     this.editTextMode = false;
+    if (this.isEditing) {
+       this.isEditing = !this.isEditing;
+    }
   }
 }

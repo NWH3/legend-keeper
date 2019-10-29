@@ -12,42 +12,31 @@ import Symbaroum_World_Data from "../../assets/Symbaroum_World_Data.json";
 export class WorldComponent implements OnInit {
 
   private world;
-
-  private color;
-
-  private textColor;
+  private svg;
+  private bins;
+  private hexRadius;
 
   private editMode;
-
-  private showSessions;
-
   private editTextMode;
-
   private editColorMode;
-
-  private bins;
-
-  private svg;
-
+  private showSessions;
   private isEditing;
+  private isLoading;
 
-  private editText;
-
-  private mapWidth;
-
-  private mapHeight;
-
-  private brushWidth;
-
+  private color;
+  private textColor;
   private textSize;
-
-  private hexRadius;
+  private editText;
+  private mapWidth;
+  private mapHeight;
+  private brushWidth;
 
   private specialChrRegex = /['"^&*#$@!\s]/g;
 
   constructor() { }
 
   ngOnInit() {
+    this.isLoading = false;
     this.world = Symbaroum_World_Data;
     this.textSize = 20;
     this.hexRadius = 14;
@@ -66,13 +55,16 @@ export class WorldComponent implements OnInit {
   }
 
   loadHexagonMap() {
+    this.isLoading = true;
     var hexbin = d3hexbin.hexbin();
     var self = this;
     this.svg = d3.select("svg")
       .attr('pointer-events', 'all')
       .call(d3.zoom().scaleExtent([0.05, 20]).on("zoom", function () {
         if (!self.isEditing) {
-          self.svg.attr("transform", d3.event.transform);
+          self.svg.transition()
+                 .duration('5')
+                 .attr("transform", d3.event.transform);
         }
       }))
       .append("g")
@@ -114,7 +106,7 @@ export class WorldComponent implements OnInit {
       .attr("stroke", "black")
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
-               .duration('10')
+               .duration('5')
                .attr('opacity', '.85');
 
         if (self.editColorMode) {
@@ -123,7 +115,7 @@ export class WorldComponent implements OnInit {
       })
       .on('mouseout', function (d) {
         d3.select(this).transition()
-             .duration('10')
+             .duration('5')
              .attr('opacity', '1');
       })
       .on('click', function(d, i) {
@@ -137,6 +129,7 @@ export class WorldComponent implements OnInit {
         }
       })
       .append("svg:title");
+      this.isLoading = false;
   }
 
   updateHexagonColor(node, d, i, self) {

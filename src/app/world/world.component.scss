@@ -16,6 +16,46 @@
   color: white;
 }
 
+.world-info-name {
+  text-align: center;
+  font-size: 18px;
+  margin: auto;
+  padding: 0.5em;
+  width: 50%;
+}
+
+.footer {
+  width: 30%;
+  margin: auto;
+  text-align: center;
+}
+
+.pagination-place {
+  text-align: center;
+  width: 20%;
+  display: inline-block;
+}
+
+.pagination-icon {
+  width: 7%;
+  display: inline-block;
+  margin: 0.5em;
+}
+
+.pagination-icon:hover {
+  cursor: pointer;
+}
+
+.title {
+  width: 100%;
+}
+
+.worlds-side-nav {
+  width: 75%;
+  height: 100%;
+  padding-bottom: 11em;
+}
+
 .session-desc {
   width: 100%;
   height: 100%;
@@ -24,16 +64,27 @@
   margin-top: 1em;
   margin-bottom: 1em;
   text-indent: 2em;
+  min-height: 10em;
+  max-width: 100%;
+  min-width: 30em;
 }
 
 .session-side-nav {
-  width: 85%;
+  width: 75%;
   height: 100%;
-  padding-bottom: 8em;
+  padding-bottom: 11em;
 }
 
 mat-accordion>.mat-expansion-panel-spacing {
     margin-bottom: 1em;
+}
+
+.maps-header {
+  text-align: center;
+  width: 50%;
+  margin: auto;
+  padding: 1em;
+
 }
 
 .world-map-container {
@@ -95,6 +146,37 @@ mat-accordion>.mat-expansion-panel-spacing {
   width: 10%;
 }
 
+.world-select-button {
+  width: 40%;
+  background: #2183c8;
+  margin: 0.5em;
+  margin-left: 2em;
+}
+
+.world-select-button:hover {
+  background: #1399f7;
+}
+
+.map-select-container {
+  width: 100%;
+  display: block;
+  margin: auto;
+  text-align: center;
+  border-bottom: solid;
+  border-top: solid;
+  margin-bottom: 1em;
+}
+
+.map-select-button {
+  margin: 0.5em;
+  width: 40%;
+  background: #2183c8;
+}
+
+.map-select-button:hover {
+  background: #1399f7;
+}
+
 .edit-button:hover {
   background: #1399f7;
 }
@@ -138,6 +220,15 @@ mat-accordion>.mat-expansion-panel-spacing {
   margin: 0.5em;
 }
 
+.create-button {
+  margin: 0.5em;
+  background: #2183c8;
+}
+
+.create-button:hover {
+  background: #1399f7;
+}
+
 .refresh-map-button:hover {
   background: #1399f7;
 }
@@ -160,6 +251,10 @@ mat-accordion>.mat-expansion-panel-spacing {
 
 .block {
   display: block;
+}
+
+.space-holder {
+  margin-bottom: 15em;
 }
 
 mat-expansion-panel {

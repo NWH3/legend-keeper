@@ -7,6 +7,7 @@ Application used to display, edit, save, and upload a D3 hex map along with game
 - Angular 8
 - ngx-color-picker
 - D3
+- jwt-decode
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.12.
 
@@ -26,7 +27,8 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build --prod` for a production ready build.
 
 ## Running unit tests
 
@@ -39,7 +41,3 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
-
-## Author
-
-Nathanial W. Heard

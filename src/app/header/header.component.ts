@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import Symbaroum_World_Data from "../../assets/Symbaroum_World_Data.json";
+import { AuthService } from '../auth/service/auth.service'
 
 @Component({
   selector: 'app-header',
@@ -8,18 +8,29 @@ import Symbaroum_World_Data from "../../assets/Symbaroum_World_Data.json";
 })
 export class HeaderComponent implements OnInit {
 
-  private world;
+  public title;
 
-  private editMode;
-
-  private title;
-
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
-    this.title = 'Legend Keeper Alpha V0.0.1'
-    this.editMode = false;
-    this.world = Symbaroum_World_Data;
+    this.title = 'Legend Keeper Alpha V0.0.3';
+  }
+
+  logout() {
+    this.authService.logout().subscribe((res) => {
+      this.authService.deleteToken();
+    },
+    error => {console.log(error);
+      if (error.status === 401) {
+        this.authService.deleteToken();
+      } else {
+        console.log('Unable to find worlds...');
+      }
+    });
+  }
+
+  isTokenExpired(): boolean {
+    return !this.authService.isTokenExpired();
   }
 
 }

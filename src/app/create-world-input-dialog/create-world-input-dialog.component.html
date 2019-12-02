@@ -1,0 +1,19 @@
+<div class="create-world-dialog" mat-dialog-content>
+  <p>Please enter name:</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.name">
+  </mat-form-field>
+  <p *ngIf="data && data.era != null && data.era != null">Please enter era:</p>
+  <div>
+  <mat-form-field *ngIf="data && data.era != null && data.era != null">
+    <input matInput [(ngModel)]="data.era">
+  </mat-form-field>
+  <p>Please enter description:</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.desc">
+  </mat-form-field>
+</div>
+<div class="button-container" mat-dialog-actions>
+  <button class="create-world-dialog-button" mat-button (click)="onCancel()">Cancel</button>
+  <button class="create-world-dialog-button" mat-button [mat-dialog-close]="data" cdkFocusInitial>Continue</button>
+</div>

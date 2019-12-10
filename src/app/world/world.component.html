@@ -12,7 +12,7 @@
       <div class="block">
         <button id="edit-text-button" class="edit-button" (click)="toggleEditTextMode()" mat-raised-button>{{editTextMode && 'Disable Text Edit Mode' || 'Enable Text Edit Mode'}}</button>
         <label id="edit-text-label" class="edit-text-label" >Enter Text: </label>
-        <input type="text" id="edit-text" class="edit-text" (change)="updateText(this)" matInput />
+        <input type="text" id="edit-text" class="edit-text" [(ngModel)]="editText" matInput />
         <label id="color-width-label" class="color-label" >Text Size: </label>
         <input id="text-size" class="text-size" type="number" [(ngModel)]="textSize" matInput />
         <label id="color-picker-label" class="color-label" >Select Color: </label>
@@ -20,6 +20,7 @@
       </div>
       <div class="block">
         <button id="edit-color-button" class="edit-button" (click)="toggleEditColorMode()" mat-raised-button>{{editColorMode && 'Disable Color Edit Mode' || 'Enable Color Edit Mode'}}</button>
+        <button class="edit-button" (click)="toggleColorEditDragMode()" mat-raised-button>{{ colorEditDragMode && 'Disable Color Drag' || 'Enable Color Drag' }}</button>
         <label id="color-width-label" class="color-label" >Brush Width: </label>
         <input id="color-brush-width" class="color-brush" type="number" [(ngModel)]="brushWidth" />
         <label id="color-picker-label" class="color-label" >Select Color: </label>
@@ -34,7 +35,6 @@
         <label class="map-width-label" >Load Map: </label>
         <input type="file" id="load-map" class="load-map-button" (change)="uploadMap(this)" />
         <button class="save-map" class="save-map-button" (click)="downloadMap(this)" mat-raised-button>Download Map</button>
-        <button class="save-map" class="save-map-button" (click)="openMapNameDialog()" mat-raised-button>Save Map to World</button>
       </div>
     </div>
     <mat-drawer-container class="drawer-container" >
@@ -44,20 +44,12 @@
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <input class="title" [(ngModel)]="s.name" />
+                    <label class="title" >{{s.name}} ({{s.date}})</label>
                   </mat-panel-title>
-                  <mat-panel-description>
-                    {{s.date}}
-                  </mat-panel-description>
                 </mat-expansion-panel-header>
-                <textarea class="session-desc" [(ngModel)]="s.desc"></textarea>
-                <button class="world-select-button" (click)="updateWorldSession(s)" mat-raised-button>Update {{s.name}}</button>
-                <button class="world-select-button" (click)="deleteWorldSessionConfirm(s.id, s.name)" mat-raised-button>Delete {{s.name}}</button>
+                <label class="session-desc">{{s.desc}}</label>
               </mat-expansion-panel>
             </mat-accordion>
-          </div>
-          <div class="footer">
-            <button class="create-button" (click)="createNewWorldSession(this)" mat-raised-button>Create New World Session</button>
           </div>
       </mat-drawer>
       <mat-drawer position="end" class="worlds-side-nav" #worldsDrawer>
@@ -67,42 +59,21 @@
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <input class="title" [(ngModel)]="w.name" />
+                    <label class="title">{{w.name}}</label>
                   </mat-panel-title>
                   <mat-panel-description>
                     {{w.dateUpdated}}
                   </mat-panel-description>
                 </mat-expansion-panel-header>
-                <textarea class="session-desc" [(ngModel)]="w.desc"></textarea>
-                <button class="world-select-button" (click)="loadWorld(w)" mat-raised-button>Load {{w.name}}</button>
-                <button class="world-select-button" (click)="updateWorld(w)" mat-raised-button>Update {{w.name}}</button>
-                <button class="world-select-button" (click)="deleteWorldConfirm(w.id, w.name)" mat-raised-button>Delete {{w.name}}</button>
+                <label class="session-desc" >{{w.desc}}</label>
+                <button class="map-select-button" (click)="loadWorld(w)" mat-raised-button>Load {{w.name}}</button>
               </mat-expansion-panel>
             </mat-accordion>
-            <div class="footer">
-                <div class="pagination-icon" (click)="moveToStart()" >
-                    <mat-icon>arrow_back</mat-icon>
-                </div>
-                <div class="pagination-icon" (click)="moveBack()" >
-                    <mat-icon>arrow_back_ios</mat-icon>
-                </div>
-                <div class="pagination-place">
-                    <label>Page {{page.number + 1}}</label>
-                </div>
-                <div class="pagination-icon" (click)="moveNext()">
-                    <mat-icon>arrow_forward_ios</mat-icon>
-                </div>
-                <div class="pagination-icon" (click)="moveToEnd()">
-                    <mat-icon>arrow_forward</mat-icon>
-                </div>
-                <button class="create-button" (click)="createNewWorld(this)" mat-raised-button>Create New World</button>
-            </div>
             <h3 class="maps-header">World Maps for {{world.name}}</h3>
             <div *ngFor="let m of maps">
               <div class="map-select-container">
                 <h3>{{m.name}}</h3>
                 <button class="map-select-button" (click)="loadWorldMap(m)" mat-raised-button>Load {{m.name}}</button>
-                <button class="map-select-button" (click)="deleteWorldMapConfirm(m.id, m.name)" mat-raised-button>Delete {{m.name}}</button>
               </div>
             </div>
             <div class="space-holder">

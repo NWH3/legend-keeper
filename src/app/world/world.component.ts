@@ -1,23 +1,18 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { SingleInputDialogComponent } from '../single-input-dialog/single-input-dialog.component';;
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as d3 from 'd3';
 import * as d3hexbin from 'd3-hexbin';
-import Symbaroum_Map from '../../assets/Symbaroum_Map.json';
-import Symbaroum_World_Data from '../../assets/Symbaroum_World_Data.json';
-import { AuthService } from '../auth/service/auth.service';
-import { WorldService } from './service/world.service';
-import { PageRequest } from './model/page-request.model';
-import { Page } from './model/page.model';
 import { WorldListDto } from './model/world-list-dto.model';
-import { CreateWorldMapRequest } from './model/create-world-map-request.model';
-import { CreateWorldRequest } from './model/create-world-request.model';
-import { UpdateWorldRequest } from './model/update-world-request.model';
-import { CreateWorldSessionRequest } from './model/create-world-session-request.model';
-import { UpdateWorldSessionRequest } from './model/update-world-session-request.model';
-import { CreateWorldInputDialogComponent } from '../create-world-input-dialog/create-world-input-dialog.component';
+import { WorldMapListDto } from './model/world-map-list-dto.model';
 import { WorldSession } from './model/world-session.model';
+import Symbaroum_Map_The_Ambrian_Struggle from "../../assets/Symbaroum_Map_The_Ambrian_Struggle.json";
+import Symbaroum_Map_The_Ambrian_Struggle_Path from "../../assets/Symbaroum_Map_The_Ambrian_Struggle_Path.json";
+import Symbaroum_Map_The_Wild_Elderfolk from "../../assets/Symbaroum_Map_The_Wild_Elderfolk.json";
+import Symbaroum_World_Maps_The_Ambrian_Struggle from "../../assets/Symbaroum_World_Maps_The_Ambrian_Struggle.json";
+import Symbaroum_World_Maps_The_Wild_Elderfolk from "../../assets/Symbaroum_World_Maps_The_Wild_Elderfolk.json";
+import Symbaroum_World_Data_The_Ambrian_Struggle from "../../assets/Symbaroum_World_Data_The_Ambrian_Struggle.json";
+import Symbaroum_World_Data_The_Wild_Elderfolk from "../../assets/Symbaroum_World_Data_The_Wild_Elderfolk.json";
 
 @Component({
   selector: 'app-world',
@@ -35,13 +30,12 @@ export class WorldComponent implements OnInit {
   public hexRadius;
 
   public worlds: any;
-  public pageRequest: PageRequest;
-  public page: Page<WorldListDto>;
   public maps: any;
 
   public editMode;
   public editTextMode;
   public editColorMode;
+  public colorEditDragMode;
   public showSessions;
   public showWorlds;
   public isEditing;
@@ -57,11 +51,23 @@ export class WorldComponent implements OnInit {
 
   private specialChrRegex = /[''^&*#$@!\s]/g;
 
-  constructor(public dialog: MatDialog, private worldService: WorldService, private authService: AuthService) { }
+  constructor(public dialog: MatDialog) { }
 
   ngOnInit() {
-    this.pageRequest = new PageRequest();
-    this.worlds = [];
+    this.worlds = [
+      {
+        "id": "1",
+        "name": "Symbaroum - The Ambrian Struggle",
+        "era": "year 21 of Korinthia",
+        "desc": "The adventures of Garibald, Greg, Jay, Purah, Ripley, and Vento in Symbaroum."
+      },
+      {
+        "id": "2",
+        "name": "Symbaroum - The Wild Elderfolk",
+        "era": "year 21 of Korinthia",
+        "desc": "The adventures of Grumpy, Hassson, and Ragoro in Symbaroum."
+      }
+    ];
     this.isLoading = false;
     this.textSize = 20;
     this.hexRadius = 14;
@@ -75,342 +81,12 @@ export class WorldComponent implements OnInit {
     this.showWorlds = false;
     this.editTextMode = false;
     this.editColorMode = false;
+    this.colorEditDragMode = false;
     this.isEditing = false;
-    this.pageRequest.page = 0;
-
-    this.getAllWorlds(this.pageRequest, true);
-  }
-
-  getAllWorlds(pageRequest: PageRequest, loadWorldMap: boolean): void {
-    this.isLoading = true;
-    this.worldService.getAllWorlds(this.pageRequest).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.page = res.body;
-          this.worlds = res.body.content;
-          if (loadWorldMap) {
-            this.getWorld(this.worlds[0].id);
-          }
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to find worlds...');
-      }
-    });
-  }
-
-  getWorldMap(mapId: string) {
-    this.isLoading = true;
-    const worldMap = this.worldService.getWorldMapById(mapId).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.bins = JSON.parse(res.body.map);
-          this.loadHexagonMap();
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to find world map...');
-      }
-    });
-  }
-
-  getWorld(id: string) {
-    this.isLoading = true;
-    const worldMap = this.worldService.getWorldById(id).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-          this.maps = this.world.maps;
-          if (this.world.maps && this.world.maps.length > 0) {
-            this.getWorldMap(this.world.maps[0].id);
-          }
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to find world...');
-      }
-    });
-  }
-
-  updateWorldSession(session: WorldSession) {
-    this.isLoading = true;
-    let updateWorldSession = new UpdateWorldSessionRequest;
-    updateWorldSession.worldId = this.world.id;
-    updateWorldSession.id = session.id;
-    updateWorldSession.name = session.name;
-    updateWorldSession.desc = session.desc;
-    this.worldService.updateWorldSession(updateWorldSession).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to update world session...');
-      }
-    });
-  }
-
-  createWorldSession(createWorldSessionRequest: CreateWorldSessionRequest) {
-    this.isLoading = true;
-    this.worldService.createWorldSession(createWorldSessionRequest).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-          this.maps = this.world.maps;
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to create world session...');
-      }
-    });
-  }
-
-  deleteWorldSession(sessionId: string) {
-    this.isLoading = true;
-    this.worldService.deleteWorldSession(this.world.id, sessionId).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to delete world...');
-      }
-    });
-  }
-
-  deleteWorldSessionConfirm(sessionId: string, sessionName: string) {
-    const dialogRef = this.dialog.open(SingleInputDialogComponent, {
-      width:  '50%',
-      data: { name: sessionName }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result == sessionName) {
-        this.deleteWorldSession(sessionId);
-      } else if (result && result != sessionName) {
-        alert('Please type name exactly as spelled.')
-      }
-    });
-  }
-
-  createNewWorldSession(element) {
-    const dialogRef = this.dialog.open(CreateWorldInputDialogComponent, {
-      width: '50%',
-      height: '30%',
-      data: { name: '', desc: '' }
-    });
-
-    dialogRef.afterClosed().subscribe(data => {
-      if (data && data.name) {
-        let request = new CreateWorldSessionRequest;
-        request.name = data.name;
-        request.desc = data.desc;
-        request.worldId = this.world.id;
-        this.createWorldSession(request);
-      } else if (!data.isCancel) {
-        alert('Name is required');
-      }
-    });
-  }
-
-  deleteWorld(worldId: string) {
-    this.isLoading = true;
-    this.worldService.deleteWorld(worldId).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.getAllWorlds(this.pageRequest, false);
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to delete world...');
-      }
-    });
-  }
-
-  deleteWorldConfirm(worldId: string, worldName: string) {
-    const dialogRef = this.dialog.open(SingleInputDialogComponent, {
-      width:  '50%',
-      data: { name: worldName }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result == worldName) {
-        this.deleteWorld(worldId);
-      } else if (result && result != worldName) {
-        alert('Please type name exactly as spelled.')
-      }
-    });
-  }
-
-  updateWorld(world: WorldListDto) {
-    this.isLoading = true;
-    let updateWorld = new UpdateWorldRequest;
-    updateWorld.id = world.id;
-    updateWorld.name = world.name;
-    updateWorld.desc = world.desc;
-    updateWorld.era = world.era;
-    this.worldService.updateWorld(updateWorld).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to update world...');
-      }
-    });
-  }
-
-  createWorld(createWorldRequest: CreateWorldRequest) {
-    this.isLoading = true;
-    this.worldService.createWorld(createWorldRequest).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-          this.maps = this.world.maps;
-          this.showWorlds = false;
-          this.worldsDrawer.close();
-          this.getAllWorlds(this.pageRequest, false);
-          this.generateNewMap();
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to create world...');
-      }
-    });
-  }
-
-  createNewWorld(element) {
-    const dialogRef = this.dialog.open(CreateWorldInputDialogComponent, {
-      width: '50%',
-      height: '50%',
-      data: { name: '', era: '', desc: '' }
-    });
-
-    dialogRef.afterClosed().subscribe(data => {
-      if (data && data.name && data.era) {
-        let request = new CreateWorldRequest;
-        request.name = data.name;
-        request.era = data.era;
-        request.desc = data.desc;
-        this.createWorld(request);
-      } else if (!data.isCancel) {
-        alert('Name and era are required');
-      }
-    });
-  }
-
-  saveWorldMap(name: string) {
-    this.isLoading = true;
-    let request: CreateWorldMapRequest = new CreateWorldMapRequest();
-    request.name = name;
-    request.worldId = this.world.id;
-    request.creator = this.authService.getUsername();
-
-    var binCopies = new Array<any>();
-    for (let i = 0; i < this.bins.length; i++) {;
-      binCopies[i] = {};
-      binCopies[i].x = this.bins[i].x;
-      binCopies[i].y = this.bins[i].y;
-      binCopies[i][0] = this.bins[i][0];
-      binCopies[i].color = this.bins[i].color;
-      binCopies[i].text = this.bins[i].text;
-      binCopies[i].textSize = this.bins[i].textSize;
-      binCopies[i].textColor = this.bins[i].textColor;
-    }
-
-    request.mapData = JSON.stringify(binCopies);
-
-    const worldMap = this.worldService.createWorldMap(request).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-          this.maps = this.world.maps;
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to create world map...');
-      }
-    });
-  }
-
-  deleteWorldMapConfirm(mapId: string, mapName: string) {
-    const dialogRef = this.dialog.open(SingleInputDialogComponent, {
-      width:  '50%',
-      data: { name: mapName }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result == mapName) {
-        this.deleteWorldMap(mapId);
-      } else {
-        alert('Please type name exactly as spelled.')
-      }
-    });
-  }
-
-  deleteWorldMap(mapId: string) {
-    this.isLoading = true;
-    this.worldService.deleteWorldMap(this.world.id, mapId).subscribe((res) => {
-        this.isLoading = false;
-        if (res && res.body) {
-          this.world = res.body;
-          this.maps = this.world.maps;
-          if (this.world.maps && this.world.maps.length > 0) {
-            this.getWorldMap(this.world.maps[0].id);
-          }
-        }
-    },
-    error => {
-      this.isLoading = false;
-      if (error.status === 401) {
-        this.authService.deleteToken();
-      } else {
-        console.log('Unable to delete world map...');
-      }
-    });
+    this.bins = Symbaroum_Map_The_Ambrian_Struggle;
+    this.world = Symbaroum_World_Data_The_Ambrian_Struggle;
+    this.maps = Symbaroum_World_Maps_The_Ambrian_Struggle;
+    this.loadHexagonMap();
   }
 
   loadHexagonMap() {
@@ -468,7 +144,7 @@ export class WorldComponent implements OnInit {
                .duration('5')
                .attr('opacity', '.85');
 
-        if (self.editColorMode) {
+        if (self.isEditing) {
           self.updateHexagonColor(this, d, i, self);
         }
       })
@@ -478,8 +154,11 @@ export class WorldComponent implements OnInit {
              .attr('opacity', '1');
       })
       .on('click', function(d, i) {
-        if (self.editColorMode) {
+        if (self.colorEditDragMode) {
           self.isEditing = !self.isEditing;
+        }
+
+        if (self.editColorMode) {
           self.updateHexagonColor(this, d, i, self);
         }
 
@@ -492,8 +171,7 @@ export class WorldComponent implements OnInit {
   }
 
   updateHexagonColor(node, d, i, self) {
-    if (self.isEditing
-        && self.editColorMode
+    if (self.editColorMode
         && self.color
         && self.color.trim() != '' ) {
        d3.select(node).style('fill', self.color);
@@ -517,7 +195,6 @@ export class WorldComponent implements OnInit {
 
   updateHexagonText(d, i, self) {
     if (d.text) {
-      console.log(d.text.replace(self.specialChrRegex, '_').trim() + i);
       self.svg.select('#' + d.text.replace(self.specialChrRegex, '_').trim() + i)
         .attr('x', d.x)
         .attr('y', d.y)
@@ -530,7 +207,6 @@ export class WorldComponent implements OnInit {
       d.text = self.editText;
       d.textSize = self.textSize;
       d.textColor = self.textColor;
-      console.log(d.text.replace(self.specialChrRegex, '_').trim() + i + ' and ' + d.textSize);
       self.svg.append('text')
         .text(d.text)
         .attr('x', d.x)
@@ -563,25 +239,55 @@ export class WorldComponent implements OnInit {
     this.loadHexagonMap();
   }
 
-  loadWorldMap(map: WorldListDto) {
+  loadWorld(map: WorldListDto) {
+    this.isLoading = true;
     if (map && map.id) {
       this.showWorlds = false;
-      this.worldsDrawer.close();
-      this.svg.selectAll('*').remove();
-      this.getWorldMap(map.id);
+      let self = this;
+      this.worldsDrawer.close().then(r => {
+        self.svg.selectAll('*').remove();
+
+        if (map.id == "1") {
+          self.bins = Symbaroum_Map_The_Ambrian_Struggle;
+          self.world = Symbaroum_World_Data_The_Ambrian_Struggle;
+          self.maps = Symbaroum_World_Maps_The_Ambrian_Struggle;
+        } else if (map.id == "2") {
+          self.bins = Symbaroum_Map_The_Wild_Elderfolk;
+          self.world = Symbaroum_World_Data_The_Wild_Elderfolk;
+          self.maps = Symbaroum_World_Maps_The_Wild_Elderfolk;
+        }
+
+        this.loadHexagonMap();
+        this.isLoading = false;
+      });
+
     }
   }
 
-  loadWorld(map: WorldListDto) {
-    if (map && map.id) {
+  loadWorldMap(worldMap: WorldMapListDto) {
+    this.isLoading = true;
+    if (worldMap && worldMap.id) {
       this.showWorlds = false;
-      this.worldsDrawer.close();
-      this.svg.selectAll('*').remove();
-      this.getWorld(map.id);
+      let self = this;
+      this.worldsDrawer.close().then(r => {
+        self.svg.selectAll('*').remove();
+
+        if (worldMap.id == "Symbaroum_Map_The_Ambrian_Struggle") {
+          self.bins = Symbaroum_Map_The_Ambrian_Struggle;
+        } else if (worldMap.id == "Symbaroum_Map_The_Wild_Elderfolk") {
+          self.bins = Symbaroum_Map_The_Wild_Elderfolk;
+        } else if (worldMap.id == "Symbaroum_Map_The_Ambrian_Struggle_Path") {
+          self.bins = Symbaroum_Map_The_Ambrian_Struggle_Path;
+        }
+        self.loadHexagonMap();
+        self.isLoading = false;
+      });
+
     }
   }
 
   uploadMap(fileName) {
+    this.isLoading = true;
     var file = (<HTMLInputElement>document.getElementById('load-map')).files[0];
     if (!file) {
       console.log('No file found...')
@@ -596,9 +302,11 @@ export class WorldComponent implements OnInit {
       self.loadHexagonMap();
     };
     reader.readAsText(file);
+    this.isLoading = false;
   }
 
   downloadMap(element) {
+    this.isLoading = true;
     // Copy over the bins to a new array for saving
     var binCopies = new Array<any>();
     for (let i = 0; i < this.bins.length; i++) {;
@@ -624,10 +332,15 @@ export class WorldComponent implements OnInit {
     } else {
       dom.click();
     }
+    this.isLoading = false;
   }
 
   updateText(element) {
     this.editText = (<HTMLInputElement>document.getElementById('edit-text')).value;
+  }
+
+  toggleColorEditDragMode() {
+    this.colorEditDragMode = !this.colorEditDragMode;
   }
 
   toggleEditMode() {
@@ -669,42 +382,5 @@ export class WorldComponent implements OnInit {
     if (this.isEditing) {
        this.isEditing = !this.isEditing;
     }
-  }
-
-  moveNext(): void {
-    if ((this.pageRequest.page + 1) < this.page.totalPages) {
-      this.pageRequest.page = this.page.pageable.pageNumber + 1;
-      this.getAllWorlds(this.pageRequest, false);
-    }
-  }
-
-  moveBack(): void {
-    if (this.pageRequest.page > 0) {
-      this.pageRequest.page = this.page.pageable.pageNumber - 1;
-      this.getAllWorlds(this.pageRequest, false);
-    }
-  }
-
-  moveToStart(): void {
-    this.pageRequest.page = 0;
-    this.getAllWorlds(this.pageRequest, false);
-  }
-
-  moveToEnd(): void {
-    this.pageRequest.page = this.page.totalPages - 1;
-    this.getAllWorlds(this.pageRequest, false);
-  }
-
-  openMapNameDialog(): void {
-    const dialogRef = this.dialog.open(SingleInputDialogComponent, {
-      width:  '50%',
-      data: { name: 'map name' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.saveWorldMap(result);
-      }
-    });
   }
 }

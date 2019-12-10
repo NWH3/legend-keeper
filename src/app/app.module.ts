@@ -13,21 +13,13 @@ import { MatSidenavModule, MatFormFieldModule, MatExpansionModule, MatButtonModu
    MatDialogModule, MatProgressSpinnerModule, MatInputModule, MatIconModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProgressSpinnerComponent } from './progress-spinner/progress-spinner.component';
-import { AuthComponent } from './auth/auth.component';
-import { AuthGuard } from './auth/auth.guard';
-import { AuthInterceptor } from './auth/interceptor/auth.interceptor';
-import { SingleInputDialogComponent } from './single-input-dialog/single-input-dialog.component';
-import { CreateWorldInputDialogComponent } from './create-world-input-dialog/create-world-input-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AuthComponent,
     WorldComponent,
     HeaderComponent,
-    ProgressSpinnerComponent,
-    SingleInputDialogComponent,
-    CreateWorldInputDialogComponent
+    ProgressSpinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -48,17 +40,8 @@ import { CreateWorldInputDialogComponent } from './create-world-input-dialog/cre
   exports: [
     MatIconModule
   ],
-  entryComponents: [
-    SingleInputDialogComponent,
-    CreateWorldInputDialogComponent
-  ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    AuthGuard],
+  entryComponents: [  ],
+  providers: [ ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

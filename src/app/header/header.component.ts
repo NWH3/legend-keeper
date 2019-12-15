@@ -12,7 +12,7 @@ export class HeaderComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.title = 'Legend Keeper V0.4';
+    this.title = 'Legend Keeper V0.5';
   }
 
 }

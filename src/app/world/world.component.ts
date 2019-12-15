@@ -9,6 +9,7 @@ import { WorldSession } from './model/world-session.model';
 import Symbaroum_Map_The_Ambrian_Struggle from "../../assets/Symbaroum_Map_The_Ambrian_Struggle.json";
 import Symbaroum_Map_The_Ambrian_Struggle_Path from "../../assets/Symbaroum_Map_The_Ambrian_Struggle_Path.json";
 import Symbaroum_Map_The_Wild_Elderfolk from "../../assets/Symbaroum_Map_The_Wild_Elderfolk.json";
+import Symbaroum_Map_The_Wild_Elderfolk_Path from "../../assets/Symbaroum_Map_The_Wild_Elderfolk_Path.json";
 import Symbaroum_World_Maps_The_Ambrian_Struggle from "../../assets/Symbaroum_World_Maps_The_Ambrian_Struggle.json";
 import Symbaroum_World_Maps_The_Wild_Elderfolk from "../../assets/Symbaroum_World_Maps_The_Wild_Elderfolk.json";
 import Symbaroum_World_Data_The_Ambrian_Struggle from "../../assets/Symbaroum_World_Data_The_Ambrian_Struggle.json";
@@ -40,6 +41,7 @@ export class WorldComponent implements OnInit {
   public showWorlds;
   public isEditing;
   public isLoading;
+  public resetZoom;
 
   public color;
   public textColor;
@@ -70,11 +72,11 @@ export class WorldComponent implements OnInit {
     ];
     this.isLoading = false;
     this.textSize = 20;
-    this.hexRadius = 14;
+    this.hexRadius = 5;
     this.textColor = '#000';
     this.brushWidth = 1;
-    this.mapWidth = 100;
-    this.mapHeight = 100;
+    this.mapWidth = 299;
+    this.mapHeight = 350;
     this.editText = '';
     this.editMode = false;
     this.showSessions = false;
@@ -83,7 +85,8 @@ export class WorldComponent implements OnInit {
     this.editColorMode = false;
     this.colorEditDragMode = false;
     this.isEditing = false;
-    this.bins = Symbaroum_Map_The_Ambrian_Struggle;
+    this.resetZoom = false;
+    this.bins = Symbaroum_Map_The_Ambrian_Struggle_Path;
     this.world = Symbaroum_World_Data_The_Ambrian_Struggle;
     this.maps = Symbaroum_World_Maps_The_Ambrian_Struggle;
     this.loadHexagonMap();
@@ -95,15 +98,15 @@ export class WorldComponent implements OnInit {
     var self = this;
     this.svg = d3.select('svg')
       .attr('pointer-events', 'all')
-      .call(d3.zoom().scaleExtent([0.05, 20]).on('zoom', function () {
+      .call(d3.zoom().scaleExtent([0.5, 20]).on('zoom', function () {
         if (!self.isEditing) {
           self.svg.transition()
-                 .duration('5')
-                 .attr('transform', d3.event.transform);
+               .duration('10')
+               .attr('transform', d3.event.transform);
         }
       }))
       .append('g')
-      .attr('transform','translate(0,0)');
+      .attr('transform','translate(10,10)');
 
     hexbin = hexbin.radius(this.hexRadius);
     var paths = d3.select('g').selectAll('path');
@@ -118,6 +121,7 @@ export class WorldComponent implements OnInit {
         if (d != undefined && d != null) {
           return 'translate(' + d.x + ',' + d.y + ')';
         } else {
+          console.log('No x or y fields for variable found x: ' + d.x + ' and  y: ' + d.y);
           return 'translate(0,0)';
         }
       })
@@ -131,18 +135,19 @@ export class WorldComponent implements OnInit {
             .attr('font-size', d.textSize)
             .attr('fill', d.textColor);
         }
+
         if (d != undefined && d.color) {
           return d.color;
         } else {
           return 'rgb(88, 133, 82)';
         }
       })
-      .attr('stroke-width', 2)
+      .attr('stroke-width', 1)
       .attr('stroke', 'black')
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
-               .duration('5')
-               .attr('opacity', '.85');
+               .duration('10')
+               .attr('opacity', '.45');
 
         if (self.isEditing) {
           self.updateHexagonColor(this, d, i, self);
@@ -150,7 +155,7 @@ export class WorldComponent implements OnInit {
       })
       .on('mouseout', function (d) {
         d3.select(this).transition()
-             .duration('5')
+             .duration('10')
              .attr('opacity', '1');
       })
       .on('click', function(d, i) {
@@ -229,14 +234,16 @@ export class WorldComponent implements OnInit {
     }
     hexbin = hexbin.radius(this.hexRadius);
     this.bins = hexbin(points);
+    // Code used to migrate old versioned maps
     // for (var i = 0; i < this.bins.length; i++) {
-    //   this.bins[i].color = Symbaroum_Map[i].color;
-    //   this.bins[i].text = Symbaroum_Map[i].text;
-    //   this.bins[i].textSize = Symbaroum_Map[i].textSize;
-    //   this.bins[i].textColor = Symbaroum_Map[i].textColor;
+    //   this.bins[i].color = Symbaroum_Map_The_Wild_Elderfolk_Path[i].color;
+    //   this.bins[i].text = Symbaroum_Map_The_Wild_Elderfolk_Path[i].text;
+    //   this.bins[i].textSize = Symbaroum_Map_The_Wild_Elderfolk_Path[i].textSize - 30;
+    //   this.bins[i].textColor = Symbaroum_Map_The_Wild_Elderfolk_Path[i].textColor;
     // }
     this.svg.selectAll('*').remove();
     this.loadHexagonMap();
+    this.isLoading = false;
   }
 
   loadWorld(map: WorldListDto) {
@@ -248,11 +255,11 @@ export class WorldComponent implements OnInit {
         self.svg.selectAll('*').remove();
 
         if (map.id == "1") {
-          self.bins = Symbaroum_Map_The_Ambrian_Struggle;
+          self.bins = Symbaroum_Map_The_Ambrian_Struggle_Path;
           self.world = Symbaroum_World_Data_The_Ambrian_Struggle;
           self.maps = Symbaroum_World_Maps_The_Ambrian_Struggle;
         } else if (map.id == "2") {
-          self.bins = Symbaroum_Map_The_Wild_Elderfolk;
+          self.bins = Symbaroum_Map_The_Wild_Elderfolk_Path;
           self.world = Symbaroum_World_Data_The_Wild_Elderfolk;
           self.maps = Symbaroum_World_Maps_The_Wild_Elderfolk;
         }
@@ -274,11 +281,14 @@ export class WorldComponent implements OnInit {
 
         if (worldMap.id == "Symbaroum_Map_The_Ambrian_Struggle") {
           self.bins = Symbaroum_Map_The_Ambrian_Struggle;
+        }  else if (worldMap.id == "Symbaroum_Map_The_Ambrian_Struggle_Path") {
+          self.bins = Symbaroum_Map_The_Ambrian_Struggle_Path;
         } else if (worldMap.id == "Symbaroum_Map_The_Wild_Elderfolk") {
           self.bins = Symbaroum_Map_The_Wild_Elderfolk;
-        } else if (worldMap.id == "Symbaroum_Map_The_Ambrian_Struggle_Path") {
-          self.bins = Symbaroum_Map_The_Ambrian_Struggle_Path;
+        } else if (worldMap.id == "Symbaroum_Map_The_Wild_Elderfolk_Path") {
+          self.bins = Symbaroum_Map_The_Wild_Elderfolk_Path;
         }
+        self.resetZoom = true;
         self.loadHexagonMap();
         self.isLoading = false;
       });
@@ -341,6 +351,9 @@ export class WorldComponent implements OnInit {
 
   toggleColorEditDragMode() {
     this.colorEditDragMode = !this.colorEditDragMode;
+    if (!this.colorEditDragMode) {
+      this.isEditing = false;
+    }
   }
 
   toggleEditMode() {

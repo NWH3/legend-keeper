@@ -22,8 +22,8 @@ import Symbaroum_World_Data_The_Wild_Elderfolk from "../../assets/Symbaroum_Worl
 })
 export class WorldComponent implements OnInit {
 
-  @ViewChild('drawer', {static: false}) drawer;
-  @ViewChild('worldsDrawer', {static: false}) worldsDrawer;
+  @ViewChild('drawer') drawer;
+  @ViewChild('worldsDrawer') worldsDrawer;
 
   public world;
   public svg;
